@@ -1,0 +1,9 @@
+2012/01/05	
+	- The default settings do not get overriden with the settings set by the user
+	- delegateFunc now receives the event argument (e)
+	- setActiveLink() now throws an error if it has NaN (internal function which uses values from showPage())
+	- Changing name version to 0.2
+
+2011/11/28 
+	- Added option to allow (or not) the < and > buttons
+	- Improved the default showPage function by filtering by the visible elements
