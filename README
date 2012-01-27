@@ -40,12 +40,10 @@ Options:
 	- continueOnOnePage: Create pagination elements if there are not enough elements. Default = false,
 		
 	- pageActiveClass:Class for the element in the pagination container that represents the active page. Default = 'acsPageActive'.
-	- pageClass:'acsPage'.
+	- pageClass:'acsPage' 
 		
-		/**
-		 * Delegate function for the pagination links
-		 * 
-		 * @param event e
+	- delegateFunc:function (e,link,pPage,itensPerPage,currPage,items,tPages,showPage) { ... } Delegate function for the pagination links
+		* @param event e
 		 * @param jQuery link
 		 * @param int pPage - Page to go
 		 * @param int itemsPerPage
@@ -55,36 +53,10 @@ Options:
 		 * @param function showPage A simpler version of $.fn.acsPaginator.showPage where only the page to go is required
 		 * 
 		 * @return int current page 
-		 */
-		delegateFunc:function (e,link,pPage,itensPerPage,currPage,items,tPages,showPage) {   
-			var newCurrPage = currPage;
-			     
-	        if (pPage.match(/\d+/) && pPage > 0) {
-	            newCurrPage = showPage(pPage);
-	        }
-	        else {
-	        	//Force number
-	        	currPage *=1;
-	            //ie6 hack. Must split on the #                    
-	            switch (link.attr('href').split('#')[1]) {
-	                case 'prev':
-	                    if (currPage > 1)
-	                        newCurrPage = showPage(--currPage);
-	                    break;
-	                case 'next':
-	                    if (currPage < tPages) {
-	                        newCurrPage = showPage(++currPage);
-	                    }
-	                break;
-	        	}        
-			}
-			
-			return newCurrPage;
-		},
 		
-		/**	 
-		 * Function that will show/hide the items. Must return the current page 
-		 *
+
+	- showPage:function (pPage,itensPerPage,currPage,items,tPages) { ... } Function that will show/hide the items. Must return the current page 
+
 		 * @param int pPage
 		 * @param int itemsPerPage
 		 * @param int currPage
@@ -92,19 +64,8 @@ Options:
 		 * @param int tPages
 		 * 
 		 * @return int current page 
-		 */
-		showPage:function (pPage,itensPerPage,currPage,items,tPages) {
-	    	currPage = pPage * 1; //Convert to number
-	
-	    	var end = itensPerPage * currPage,
-				start = end - itensPerPage;
-	
-	    	items.filter(':visible').hide();
-	    	items.slice(start, end).show();
-	    	
-	    	return currPage;
-		},
+
 		
-		delegateClickPreventDefault: true,			
-		delegateClickStopPropagation: true			
-	};
+	- delegateClickPreventDefault: true
+	- delegateClickStopPropagation: true			
+	
