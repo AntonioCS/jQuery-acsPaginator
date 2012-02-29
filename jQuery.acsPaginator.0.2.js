@@ -123,7 +123,7 @@
 			return l.append(a);
 		}				
 		
-		var itensPerPage = settings.itemsPerPage;
+		var itensPerPage = settings.itemsPerPage,
     		items = settings.items || this.children(),
     		tPages = settings.tPages || Math.ceil( (typeof items == 'object' ? items.length : items) / itensPerPage),
     		currPage = settings.currPage,
