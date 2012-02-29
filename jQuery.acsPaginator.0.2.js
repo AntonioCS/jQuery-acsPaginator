@@ -1,4 +1,10 @@
-
+/**
+ *
+ * A simple jQuery based paginator
+ * 
+ * @author AntonioCS
+ *
+ */
 
 (function ($) {
 		
@@ -6,6 +12,20 @@
 		
 		//not modifying the defaults
 		settings = $.extend({},$.fn.acsPaginator.settings.defaults,settings);
+        
+        
+        var itensPerPage = settings.itemsPerPage,
+    		items = settings.items || this.children(),
+    		tPages = settings.tPages || Math.ceil( (typeof items == 'object' ? items.length : items) / itensPerPage),
+    		currPage = settings.currPage,
+    		p = settings.placeHolder ? $(settings.placeHolder) : this.parent(),
+    		container = $(settings.container).addClass(settings.containerClass),
+    		pagesContainer = $(settings.pageNumbersContainer),    		
+    		//Will hold all the generated links (except the < and >)
+    		linksCache = [],
+    		//For the alwaysShowFirstAndLast elements seperators
+    		firstPlacer = null,
+    		lastPlacer = null; 
 		
 		/**
 		 * Set the correct link of the page that is active
@@ -15,13 +35,13 @@
 		function setActiveLink(num) {			
 			num = (num || currPage) -1;
 			
-			if (isNaN(num))
+			if (isNaN(num) || linksCache[num] == undefined)
 				throw new Error('Undefined position of active link (did showPage() return anything?)');
 
 			$.each(linksCache, function() { 
 				this.removeClass(settings.pageActiveClass).addClass(settings.pageClass) 
 			});
-			
+			                        
     		linksCache[num].addClass(settings.pageActiveClass).removeClass(settings.pageClass);			
     		
     		//showMaxLinks
@@ -121,25 +141,13 @@
 				a = $('<a>').attr('href',href).html(text);
 			
 			return l.append(a);
-		}				
-		
-		var itensPerPage = settings.itemsPerPage,
-    		items = settings.items || this.children(),
-    		tPages = settings.tPages || Math.ceil( (typeof items == 'object' ? items.length : items) / itensPerPage),
-    		currPage = settings.currPage,
-    		p = settings.placeHolder ? $(settings.placeHolder) : this.parent(),
-    		container = $(settings.container).addClass(settings.containerClass),
-    		pagesContainer = $(settings.pageNumbersContainer),    		
-    		//Will hold all the generated links (except the < and >)
-    		linksCache = [],
-    		//For the alwaysShowFirstAndLast elements seperators
-    		firstPlacer = null,
-    		lastPlacer = null;    
+		}						   
     		
-
-    	if (tPages == 1 && !settings.continueOnOnePage) {    		
+       
+    	if (tPages <= 1 && !settings.continueOnOnePage) {    		
         	return;
        	}
+        
 
 		//Create number links
 		if (!settings.noPrevNextBtn)
