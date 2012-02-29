@@ -218,6 +218,21 @@
 	
 		pageNumbersContainer:'<ul>',
 		pageNumbersContainerChildren:'<li>',
+        
+        //Custom format
+        paginationUseCustomFormat: false,
+        
+        /**
+         *
+         * Keywords to use: 
+         *  %currPage% - Current Page 
+         *  %total% - Total Pages
+         *  %prev% - Previous Page
+         *  %next% - Next Page
+         * 
+         **/
+        paginationCustomFormat: null,
+        
 	
 		//No < or > button
 		noPrevNextBtn: false,
