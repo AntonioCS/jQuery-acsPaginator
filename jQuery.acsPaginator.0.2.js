@@ -129,8 +129,7 @@
     		currPage = settings.currPage,
     		p = settings.placeHolder ? $(settings.placeHolder) : this.parent(),
     		container = $(settings.container).addClass(settings.containerClass),
-    		pagesContainer = $(settings.pageNumbersContainer),
-    		html = [],
+    		pagesContainer = $(settings.pageNumbersContainer),    		
     		//Will hold all the generated links (except the < and >)
     		linksCache = [],
     		//For the alwaysShowFirstAndLast elements seperators
@@ -293,5 +292,3 @@
 	};
 	    	
 })(jQuery);
-
-//pag.showPage(1);
