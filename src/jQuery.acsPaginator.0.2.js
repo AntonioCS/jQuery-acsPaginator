@@ -10,51 +10,58 @@
 		
 	$.fn.acsPaginator = function(settings) {
 		
-		//not modifying the defaults
-		settings = $.extend({},$.fn.acsPaginator.settings.defaults,settings);
-        
-        
-        var itensPerPage = settings.itemsPerPage,
-    		items = settings.items || this.children(),
-    		tPages = settings.tPages || Math.ceil( (typeof items == 'object' ? items.length : items) / itensPerPage),
-    		currPage = settings.currPage,
-    		p = settings.placeHolder ? $(settings.placeHolder) : this.parent(),
-    		container = $(settings.container).addClass(settings.containerClass),
-    		pagesContainer = $(settings.pageNumbersContainer),    		
-    		//Will hold all the generated links (except the < and >)
-    		linksCache = [],
-    		//For the alwaysShowFirstAndLast elements seperators
-    		firstPlacer = null,
-    		lastPlacer = null; 
+		//Methods
+		if (typeof settings == 'string') {
+			switch (settings) {
+				case 'destroy':
+					var eleSet = this.data('settings');
+					
+					if (eleSet) {
+						eleSet.container.remove();						
+						eleSet.items.show();
+						
+						jQuery.removeData(this);
+					}															
+				break;		
+			}
+			
+			return;
+		}
+		
+		
+		
 		
 		/**
 		 * Set the correct link of the page that is active
 		 * 
 		 * @param int num This is optional. Default: currPage
 		 */
-		function setActiveLink(num) {			
-			num = (num || currPage) -1;
+		function setActiveLink(ele,num) {
+			var data = $.data(ele,'settings');
 			
-			if (isNaN(num) || linksCache[num] == undefined)
+						
+			num = (num || data.currPage) -1;
+			
+			if (isNaN(num) || data.linksCache[num] == undefined)
 				throw new Error('Undefined position of active link (did showPage() return anything?)');
 
-			$.each(linksCache, function() { 
-				this.removeClass(settings.pageActiveClass).addClass(settings.pageClass) 
+			$.each(data.linksCache, function() { 
+				this.removeClass(data.settings.pageActiveClass).addClass(data.settings.pageClass) 
 			});
 			                        
-    		linksCache[num].addClass(settings.pageActiveClass).removeClass(settings.pageClass);			
+    		data.linksCache[num].addClass(data.settings.pageActiveClass).removeClass(data.settings.pageClass);			
     		
     		//showMaxLinks
-    		if (settings.showMaxLinks && linksCache.length > settings.showMaxLinks) {
+    		if (data.settings.showMaxLinks && data.linksCache.length > data.settings.showMaxLinks) {
     			  			
-				$.each(linksCache, function(k) { 								
+				$.each(data.linksCache, function(k) { 								
 					this.hide();	
 				});
 				
 				
-				var mLinks = settings.showMaxLinks*1,			 
+				var mLinks = data.settings.showMaxLinks*1,			 
 					nm = num+1,
-					linkLen = linksCache.length,
+					linkLen = data.linksCache.length,
 					show = [],
 					fetch,
 					a,b;
@@ -84,43 +91,43 @@
 						}													
 				}
 
-				show = linksCache.slice(a,b);
+				show = data.linksCache.slice(a,b);
 				$.each(show, function() {
     				this.show(); 
     			});	 
     			
-				if (settings.alwaysShowFirstAndLast) {
-					var first = linksCache[0], 
-						last = linksCache[linkLen-1];
+				if (data.settings.alwaysShowFirstAndLast) {
+					var first = data.linksCache[0], 
+						last = data.linksCache[linkLen-1];
 					
 					if (!first.is(':visible')) {
-						if (!firstPlacer) {							
-							firstPlacer = $(settings.pageNumbersContainerChildren).html(settings.alwaysShowFirstAndLastSeperator);
-							firstPlacer.insertAfter(first);
+						if (!data.firstPlacer) {							
+							data.firstPlacer = $(data.settings.pageNumbersContainerChildren).html(data.settings.alwaysShowFirstAndLastSeperator);
+							data.firstPlacer.insertAfter(first);
 						}
 						
-						firstPlacer.show();
+						data.firstPlacer.show();
 						first.show();																		
 					}
 					else {
-						if (firstPlacer) {
-							firstPlacer.hide();
+						if (data.firstPlacer) {
+							data.firstPlacer.hide();
 						}
 					}
 					
 					
 					if (!last.is(':visible')) {
-						if (!lastPlacer) {							
-							lastPlacer = $(settings.pageNumbersContainerChildren).html(settings.alwaysShowFirstAndLastSeperator);
-							lastPlacer.insertBefore(last);
+						if (!data.lastPlacer) {							
+							data.lastPlacer = $(data.settings.pageNumbersContainerChildren).html(data.settings.alwaysShowFirstAndLastSeperator);
+							data.lastPlacer.insertBefore(last);
 						}
 						
-						lastPlacer.show();
+						data.lastPlacer.show();
 						last.show();						
 					}
 					else {
-						if (lastPlacer) {
-							lastPlacer.hide();
+						if (data.lastPlacer) {
+							data.lastPlacer.hide();
 						}
 					}
 				}
@@ -134,66 +141,131 @@
 		 * @param string text
 		 * @param string href (default: #)
 		 */
-		function createLink(text, href) {
+		function createLink(containerChildren,text, href) {
 			href = href || '#';
 			
-			var l = $(settings.pageNumbersContainerChildren),
-				a = $('<a>').attr('href',href).html(text);
+			var a = $('<a>').attr('href',href).html(text);
 			
-			return l.append(a);
-		}						   
-    		
-       
-    	if (tPages <= 1 && !settings.continueOnOnePage) {    		
-        	return;
-       	}
-        
-
-		//Create number links
-		if (!settings.noPrevNextBtn)
-    		pagesContainer.append(createLink(settings.prevBtn, '#prev').addClass(settings.prevBtnClass));	
-    	    	
-    	for (var i = 1; i <= tPages; i++) {
-    		var l = createLink(i);
-    		linksCache.push(l);
-    		    		    		
-    		//l.addClass((i == currPage ? settings.pageActiveClass : settings.pageClass));
-    		
-        	pagesContainer.append(l);
-    	}
-    	
-    	if (!settings.noPrevNextBtn)
-    		pagesContainer.append(createLink(settings.nextBtn, '#next').addClass(settings.nextBtnClass));
-    	
-    	p.append(container.append(pagesContainer));
-
-    	pagesContainer.delegate('a', 'click', function (e) {
-    		
-    		var innerShowPage = function(pNum) {
-    				//currPage = settings.showPage(pNum,itensPerPage,currPage,items,tPages);
-    				return settings.showPage(pNum,itensPerPage,currPage,items,tPages);
-    			},
-    			//Link element
-    			l = $(this);
-    		    		
-    		currPage = settings.delegateFunc(e,l,l.html(),itensPerPage,currPage,items,tPages,innerShowPage);
-
-    		setActiveLink();    		
-    		    		
-    		    		
-    		if (settings.delegateClickPreventDefault)
-    			e.preventDefault();			
-			
-			if (settings.delegateClickStopPropagation)	    		
-    			e.stopPropagation();
-		});
-		
-		if (settings.autoCallPageFuncOnStart) {
-			settings.showPage(currPage,itensPerPage,currPage,items,tPages);
+			return containerChildren.append(a);
 		}
 		
-		//Must be called here so that I can check settings.showMaxLinks		
-		setActiveLink();
+		
+		//not modifying the defaults
+		settings = $.extend({},$.fn.acsPaginator.settings.defaults,settings);
+        //console.log(this);
+        return this.each(function(){
+        	        	
+	        var that = this,
+	        	$this = $(that),
+	        	itensPerPage = settings.itemsPerPage,
+	        	//Total items. Default: Count the element children
+	    		items = settings.items || $this.children(),
+	    		
+	    		//Item per page
+	    		tPages = settings.tPages || Math.ceil( (typeof items == 'object' ? items.length : items) / itensPerPage),
+	    		
+	    		//Where to start the pagination
+	    		currPage = settings.currPage,
+	    		
+	    		//Where the container of the pagination links will go. Default: Element parent
+	    		p = settings.placeHolder ? $(settings.placeHolder) : $this.parent(),
+	    		
+	    		//Container of the pagination links. Ex.: <div>
+	    		container = $(settings.container).addClass(settings.containerClass),
+	    		//Element the will contain the number links. Ex.: <ul>
+	    		pagesContainer = $(settings.pageNumbersContainer),
+	    		    		
+	    		//Will hold all the generated links (except the < and >)
+	    		linksCache = [],
+	    		
+	    		//For the alwaysShowFirstAndLast elements seperators
+	    		firstPlacer = null,
+	    		lastPlacer = null,
+	    		
+	    		//Will contain all the data
+	    		elData;								   
+	    		
+	       
+	    	if (tPages <= 1 && !settings.continueOnOnePage) {    		
+	        	return;
+	       	}
+	        
+	
+			//Create number links
+			if (!settings.noPrevNextBtn)
+	    		pagesContainer.append(createLink($(settings.pageNumbersContainerChildren),settings.prevBtn, '#prev').addClass(settings.prevBtnClass));	
+	    	    	
+	    	//Create the numeration
+	    	for (var i = 1; i <= tPages; i++) {
+	    		var l = createLink($(settings.pageNumbersContainerChildren),i);
+	    		linksCache.push(l);
+	    		    		    		
+	    		//l.addClass((i == currPage ? settings.pageActiveClass : settings.pageClass));
+	    		
+	        	pagesContainer.append(l);
+	    	}
+	    	
+	    	if (!settings.noPrevNextBtn)
+	    		pagesContainer.append(createLink($(settings.pageNumbersContainerChildren),settings.nextBtn, '#next').addClass(settings.nextBtnClass));
+	    	
+	    	p.append(container.append(pagesContainer));
+		
+	    	pagesContainer.delegate('a', 'click', function (e) {
+	    		
+	    		var data = $.data(that,'settings'),
+	    			innerShowPage = function(pNum) {
+	    				//currPage = settings.showPage(pNum,itensPerPage,currPage,items,tPages);
+	    				return data.settings.showPage(pNum,data.itensPerPage,data.currPage,data.items,data.tPages);
+	    			},
+	    			//Link element
+	    			l = $(this);
+	    		    		
+	    		data.currPage = settings.delegateFunc(e,l,l.html(),data.itensPerPage,data.currPage,data.items,data.tPages,innerShowPage);
+	
+	    		setActiveLink(that);    		
+	    		    		
+	    		    		
+	    		if (data.settings.delegateClickPreventDefault)
+	    			e.preventDefault();			
+				
+				if (data.settings.delegateClickStopPropagation)	    		
+	    			e.stopPropagation();
+			});
+			
+			if (settings.autoCallPageFuncOnStart) {
+				settings.showPage(currPage,itensPerPage,currPage,items,tPages);
+			}
+			
+			
+			elData = {
+				itensPerPage:itensPerPage,
+	        	
+	    		items:items,
+	    			    		
+	    		tPages:tPages,	    			    		
+	    		currPage:currPage,	    		
+
+	    		p:p,
+	    			    		
+	    		container:container,
+	    		pagesContainer:pagesContainer,
+	    		    		
+	    		
+	    		linksCache:linksCache,
+	    		
+	    		
+	    		firstPlacer:firstPlacer,
+	    		lastPlacer:lastPlacer,
+	    		
+	    		settings:settings
+			};
+			
+			//console.log(this);
+			$.data(this,'settings',elData);
+			
+			//Must be called here so that I can check settings.showMaxLinks		
+			setActiveLink(this);			
+		});			
 	}
 		
 	$.fn.acsPaginator.settings = {};
@@ -270,13 +342,13 @@
 	        else {
 	        	//Force number
 	        	currPage *=1;
-	            //ie6 hack. Must split on the #                    
+	            //ie6 hack. Must split on the #	                        
 	            switch (link.attr('href').split('#')[1]) {
 	                case 'prev':
 	                    if (currPage > 1)
 	                        newCurrPage = showPage(--currPage);
 	                    break;
-	                case 'next':
+	                case 'next':	              		
 	                    if (currPage < tPages) {
 	                        newCurrPage = showPage(++currPage);
 	                    }
