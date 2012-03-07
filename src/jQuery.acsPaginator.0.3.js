@@ -15,7 +15,8 @@
 			var data = this.data('settings');
 			if (!data)
 				return;
-							
+			
+			
 			switch (settings) {
 				
 				//Use: $(element).acsPaginator('destroy');
@@ -45,6 +46,11 @@
 							page++;
 						}
 					}				
+                    
+                    if (count > find)
+                        page--;
+                    
+                    //console.log(page,find,count)
 					
 					data.currPage = data.settings.showPage(page,data.itensPerPage,data.currPage,data.items,data.tPages);
 					setActiveLink(this);  
