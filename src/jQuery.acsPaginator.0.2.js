@@ -28,8 +28,31 @@
 			return;
 		}
 		
-		
-		
+		/**
+         *
+         * Keywords to use: 
+         *  %currPage% - Current Page 
+         *  %total% - Total Pages
+         *  %prev% - Previous Page
+         *  %next% - Next Page
+         * 
+         **/
+		function paginationUseCustomFormatReplacer(ele) {
+			var data = $.data(ele,'settings'),
+				cusFormat = data.settings.paginationCustomFormat,
+				replacements = {
+					'%currPage%':data.currPage,			 
+ 					'%total%':data.tPages,
+   					'%prev%':data.btns.prev.html(),
+  					'%next%':data.btns.next.html()
+				}
+				
+				for (var x in replacements) {
+					cusFormat = cusFormat.replace(x,replacements[x]);					
+				}
+				
+				data.container.html(cusFormat);
+		}
 		
 		/**
 		 * Set the correct link of the page that is active
@@ -182,6 +205,9 @@
 	    		firstPlacer = null,
 	    		lastPlacer = null,
 	    		
+	    		//Will hold the prev and next btn
+	    		btns = {},
+	    		
 	    		//Will contain all the data
 	    		elData;								   
 	    		
@@ -189,28 +215,41 @@
 	    	if (tPages <= 1 && !settings.continueOnOnePage) {    		
 	        	return;
 	       	}
-	        
+	        //NOTA!!!!! 
+	        //Criar o next e prev. Nao usar o pagesContainer se for custom. Trabalhar directamente so com o container
 	
+	
+			
+	
+			
+			//Save the prev and next btn
+			btns.prev = createLink($(settings.pageNumbersContainerChildren),settings.prevBtn, '#prev').addClass(settings.prevBtnClass);
+			btns.next = createLink($(settings.pageNumbersContainerChildren),settings.nextBtn, '#next').addClass(settings.nextBtnClass);
+			 				
 			//Create number links
 			if (!settings.noPrevNextBtn)
-	    		pagesContainer.append(createLink($(settings.pageNumbersContainerChildren),settings.prevBtn, '#prev').addClass(settings.prevBtnClass));	
-	    	    	
-	    	//Create the numeration
+	    		pagesContainer.append(btns.prev);			    	    	
+    	
+    		//Create the numeration
 	    	for (var i = 1; i <= tPages; i++) {
 	    		var l = createLink($(settings.pageNumbersContainerChildren),i);
-	    		linksCache.push(l);
-	    		    		    		
-	    		//l.addClass((i == currPage ? settings.pageActiveClass : settings.pageClass));
-	    		
+	    		linksCache.push(l);		    		    		    		
+	    				    		
 	        	pagesContainer.append(l);
 	    	}
+	
+    		if (!settings.noPrevNextBtn)
+    			pagesContainer.append(btns.next);
+    			
+	    	if (!settings.paginationUseCustomFormat) {		
+	    		container.append(pagesContainer);
+	    	}
 	    	
-	    	if (!settings.noPrevNextBtn)
-	    		pagesContainer.append(createLink($(settings.pageNumbersContainerChildren),settings.nextBtn, '#next').addClass(settings.nextBtnClass));
 	    	
-	    	p.append(container.append(pagesContainer));
-		
-	    	pagesContainer.delegate('a', 'click', function (e) {
+	    	p.append(container);
+	    	
+			//To allow custom format pagination	   
+	    	container.delegate('a', 'click', function (e) {
 	    		
 	    		var data = $.data(that,'settings'),
 	    			innerShowPage = function(pNum) {
@@ -222,9 +261,9 @@
 	    		    		
 	    		data.currPage = settings.delegateFunc(e,l,l.html(),data.itensPerPage,data.currPage,data.items,data.tPages,innerShowPage);
 	
-	    		setActiveLink(that);    		
-	    		    		
-	    		    		
+	    		setActiveLink(that);    			    		    		
+	    		paginationUseCustomFormatReplacer(that);
+	    		
 	    		if (data.settings.delegateClickPreventDefault)
 	    			e.preventDefault();			
 				
@@ -257,14 +296,20 @@
 	    		firstPlacer:firstPlacer,
 	    		lastPlacer:lastPlacer,
 	    		
-	    		settings:settings
+	    		settings:settings,
+	    		btns:btns
 			};
 			
 			//console.log(this);
 			$.data(this,'settings',elData);
 			
 			//Must be called here so that I can check settings.showMaxLinks		
-			setActiveLink(this);			
+			setActiveLink(this);
+			
+			//Set the custom pagination
+			if (settings.paginationUseCustomFormat) {
+				paginationUseCustomFormatReplacer(this);
+			}			
 		});			
 	}
 		
