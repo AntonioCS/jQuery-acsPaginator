@@ -14,9 +14,8 @@
 		if (typeof settings == 'string') {
 			var data = this.data('settings');
 			if (!data)
-				throw new Error('No record of element');
-			
-			
+				return;
+							
 			switch (settings) {
 				
 				//Use: $(element).acsPaginator('destroy');
