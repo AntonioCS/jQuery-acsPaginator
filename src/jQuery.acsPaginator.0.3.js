@@ -12,17 +12,47 @@
 		
 		//Methods
 		if (typeof settings == 'string') {
+			var data = this.data('settings');
+			if (!data)
+				throw new Error('No record of element');
+			
+			
 			switch (settings) {
-				case 'destroy':
-					var eleSet = this.data('settings');
+				
+				//Use: $(element).acsPaginator('destroy');
+				case 'destroy':															
+					data.container.remove();						
+					data.items.show();
 					
-					if (eleSet) {
-						eleSet.container.remove();						
-						eleSet.items.show();
+					jQuery.removeData(this);																			
+				break;
+				
+				//Use: $(element).acsPaginator('find',Child Of Element);
+				case 'find': 
+					if (arguments.length == 1)
+						throw new Error('Missing element to find');
+					
+					var find = this.find(arguments[1]).index(),
+						count = 0,
+						page = 1;
 						
-						jQuery.removeData(this);
-					}															
-				break;		
+					if (find == -1)
+						return;
+
+					//If not in first page go look
+					if (find >= data.itensPerPage) {		
+						while (count < find) {
+							count += data.itensPerPage;						
+							page++;
+						}
+					}				
+					
+					data.currPage = data.settings.showPage(page,data.itensPerPage,data.currPage,data.items,data.tPages);
+					setActiveLink(this);  
+	    		
+	    			if (data.settings.paginationUseCustomFormat)  			    		    		
+	    				paginationUseCustomFormatReplacer(this);	 					
+				break;
 			}
 			
 			return;
@@ -38,14 +68,14 @@
          * 
          **/
 		function paginationUseCustomFormatReplacer(ele) {
-			var data = $.data(ele,'settings'),
+			var data = $(ele).data('settings'),
 				cusFormat = data.settings.paginationCustomFormat,
 				replacements = {
 					'%currPage%':data.currPage,			 
  					'%total%':data.tPages,
    					'%prev%':data.btns.prev.html(),
   					'%next%':data.btns.next.html()
-				}
+				};
 				
 				for (var x in replacements) {
 					cusFormat = cusFormat.replace(x,replacements[x]);					
@@ -60,7 +90,8 @@
 		 * @param int num This is optional. Default: currPage
 		 */
 		function setActiveLink(ele,num) {
-			var data = $.data(ele,'settings');
+			var data = $(ele).data('settings');
+			//var data = $.data(ele,'settings');
 			
 						
 			num = (num || data.currPage) -1;
@@ -261,8 +292,10 @@
 	    		    		
 	    		data.currPage = settings.delegateFunc(e,l,l.html(),data.itensPerPage,data.currPage,data.items,data.tPages,innerShowPage);
 	
-	    		setActiveLink(that);    			    		    		
-	    		paginationUseCustomFormatReplacer(that);
+	    		setActiveLink(that);  
+	    		
+	    		if (data.settings.paginationUseCustomFormat)  			    		    		
+	    			paginationUseCustomFormatReplacer(that);
 	    		
 	    		if (data.settings.delegateClickPreventDefault)
 	    			e.preventDefault();			
