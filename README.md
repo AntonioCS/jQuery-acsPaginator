@@ -20,26 +20,32 @@ How to use
 Options:
 
 	- items: Total items. If not set to null the plugin will count the children. Default = null.
+	
 	- tPages: Total pages. If not set to null the pluging will calculate. Default = null.
+	
 	- itemsPerPage: Show N items per page. Default = 4
+	
 	- autoCallPageFuncOnStart: Call the pagination function when started. Default = true.		
+	
 	- showMaxLinks: If not null only this amount of links will be shown. Default = 5.
+	
 	- alwaysShowFirstAndLast: Always show the first and last page links (will only work if showMaxLinks is not null). Default = true.
 	- alwaysShowFirstAndLastSeperator: Default = '..'.
 		 		
-	- placeHolder: By default the pagination will be added to the parent. Set here where to place it if you want to change this behaviour. Default = null.
+	- placeHolder: By default the pagination will be added to the parent. 
+				Set here where to place it if you want to change this behaviour. Default = null.
+				
 	- currPage: Page to start with. Default 1
 				
 	- container:Container for the pagination elements. Default = <div>.
 	- containerClass: Default = 'acsPaginator'.	
-	- pageNumbersContainer:'<ul>',
-	- pageNumbersContainerChildren:'<li>',
 	
+	- pageNumbersContainer:'<ul>'
+	- pageNumbersContainerChildren:'<li>'
 	
 	- noPrevNextBtn: No < or > button. Default = false.
 	- prevBtn: Default = '&lt;' (<).
-	- prevBtnClass: Default = ''.
-		
+	- prevBtnClass: Default = ''.		
 	- nextBtn: Default = '&gt;' (>).
 	- nextBtnClass: Default = ''.
 		
@@ -49,29 +55,18 @@ Options:
 	- pageClass:'acsPage' 
 		
 	- delegateFunc:function (e,link,pPage,itensPerPage,currPage,items,tPages,showPage) { ... } Delegate function for the pagination links
-		* @param event e
-		 * @param jQuery link
-		 * @param int pPage - Page to go
-		 * @param int itemsPerPage
-		 * @param int currPage
-		 * @param mixed items
-		 * @param int tPages
-		 * @param function showPage A simpler version of $.fn.acsPaginator.showPage where only the page to go is required
-		 * 
-		 * @return int current page 
-		
 
 	- showPage:function (pPage,itensPerPage,currPage,items,tPages) { ... } Function that will show/hide the items. Must return the current page 
-
-		 * @param int pPage
-		 * @param int itemsPerPage
-		 * @param int currPage
-		 * @param mixed items
-		 * @param int tPages
-		 * 
-		 * @return int current page 
-
 		
 	- delegateClickPreventDefault: true
-	- delegateClickStopPropagation: true			
+	- delegateClickStopPropagation: true		
 	
+	- paginationUseCustomFormat Set to true to use custom format: Default: false        
+	
+	- paginationCustomFormat Custom format 
+							Keywords to use: 
+							   %currPage% - Current Page 
+							   %total% - Total Pages
+							   %prev% - Previous Page
+							   %next% - Next Page
+	 
