@@ -21,8 +21,10 @@
 				
 				//Use: $(element).acsPaginator('destroy');
 				case 'destroy':															
-					data.container.remove();						
-					data.items.show();
+					data.container.remove();
+					
+					//if (data.items)						
+						//data.items.show();
 					
 					jQuery.removeData(this);																			
 				break;
@@ -372,21 +374,7 @@
 		containerClass:'acsPaginator',
 	
 		pageNumbersContainer:'<ul>',
-		pageNumbersContainerChildren:'<li>',
-        
-        //Custom format
-        paginationUseCustomFormat: false,
-        
-        /**
-         *
-         * Keywords to use: 
-         *  %currPage% - Current Page 
-         *  %total% - Total Pages
-         *  %prev% - Previous Page
-         *  %next% - Next Page
-         * 
-         **/
-        paginationCustomFormat: null,
+		pageNumbersContainerChildren:'<li>',        
         
 	
 		//No < or > button
@@ -466,7 +454,21 @@
 		},
 		
 		delegateClickPreventDefault: true,			
-		delegateClickStopPropagation: true			
+		delegateClickStopPropagation: true,
+		
+		//Custom format
+        paginationUseCustomFormat: false,
+        
+        /**
+         *
+         * Keywords to use: 
+         *  %currPage% - Current Page 
+         *  %total% - Total Pages
+         *  %prev% - Previous Page
+         *  %next% - Next Page
+         * 
+         **/
+        paginationCustomFormat: null
 	};
 	    	
 })(jQuery);
